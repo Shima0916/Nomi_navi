@@ -1,35 +1,30 @@
-// app/components/ReviewSection.tsx
-"use client";
+// components/ReviewSection.tsx
+"use client"
 
-import React, { useState } from "react";
-import Image from "next/image";
-import {
-  Star,
-  StarHalf,
-  Send,
-  User,
-  Utensils,
-  Wine,
-} from "lucide-react";
+import React, { useState } from "react"
+import Image from "next/image"
+import { Star, StarHalf, Send, User } from "lucide-react"
 
 // レビューの型定義
 export type Review = {
-  id: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: string;
-  userImage?: string;
-};
+  id: string
+  userName: string
+  rating: number
+  comment: string
+  date: string
+  userImage?: string
+}
 
+// ページ側から渡されるレビューの props 用の型
 type ReviewSectionProps = {
-  initialReviews: Review[];
-};
+  reviews: Review[]
+}
 
+// 星評価コンポーネント
 const StarRating = ({ rating }: { rating: number }) => {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 !== 0;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  const fullStars = Math.floor(rating)
+  const hasHalfStar = rating % 1 !== 0
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0)
 
   return (
     <div className="flex items-center">
@@ -42,18 +37,17 @@ const StarRating = ({ rating }: { rating: number }) => {
       ))}
       <span className="ml-1 text-sm font-medium">{rating.toFixed(1)}</span>
     </div>
-  );
-};
+  )
+}
 
+// 選択可能な星評価コンポーネント
 const SelectableStarRating = ({
   rating,
   setRating,
 }: {
-  rating: number;
-  setRating: (rating: number) => void;
+  rating: number
+  setRating: (rating: number) => void
 }) => {
-  console.log("😫😫😫😫😫😫😫😫😫😫😫😫😫😫😫😫😫😫😫😫")
-
   return (
     <div className="flex items-center">
       {[1, 2, 3, 4, 5].map((star) => (
@@ -63,38 +57,82 @@ const SelectableStarRating = ({
           onClick={() => setRating(star)}
           className="focus:outline-none"
         >
-          <Star className={`w-7 h-7 ${rating >= star ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`} />
+          <Star
+            className={`w-7 h-7 ${
+              rating >= star ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+            }`}
+          />
         </button>
       ))}
       <span className="ml-2 text-sm font-medium">
         {rating > 0 ? `${rating}.0` : "評価を選択"}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default function ReviewSection({ initialReviews, showThankYou, handleSubmitReview, newReview, isSubmitting, setNewReview }: { initialReviews: Review[]; showThankYou: boolean; handleSubmitReview: (e: React.FormEvent) => void; newReview: { rating: number; comment: string; userName: string }; isSubmitting: boolean; setNewReview: (newReview: { rating: number; comment: string; userName: string }) => void; }) {
+const ReviewSection = ({ reviews: initialReviews }: ReviewSectionProps) => {
+  const [reviews, setReviews] = useState<Review[]>(initialReviews)
+  const [newReview, setNewReview] = useState({ rating: 0, comment: "", userName: "" })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showThankYou, setShowThankYou] = useState(false)
 
+  // 平均評価の計算
   const averageRating =
-    initialReviews.length > 0 ? initialReviews.reduce((acc, review) => acc + review.rating, 0) / initialReviews.length : 0;
+    reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0
 
+  // レビュー送信処理
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (newReview.rating === 0) {
+      alert("評価を選択してください")
+      return
+    }
+    if (!newReview.userName.trim()) {
+      alert("お名前を入力してください")
+      return
+    }
+
+    setIsSubmitting(true)
+    // APIリクエストなどの代わりにタイマーで模擬処理
+    setTimeout(() => {
+      const review: Review = {
+        id: Date.now().toString(),
+        userName: newReview.userName,
+        rating: newReview.rating,
+        comment: newReview.comment,
+        date: new Date().toISOString().split("T")[0],
+        userImage: "/placeholder.svg?height=50&width=50",
+      }
+
+      setReviews([review, ...reviews])
+      setNewReview({ rating: 0, comment: "", userName: "" })
+      setIsSubmitting(false)
+      setShowThankYou(true)
+
+      setTimeout(() => {
+        setShowThankYou(false)
+      }, 3000)
+    }, 1000)
+  }
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">口コミ・評価</h2>
 
-      {/* Average Rating */}
+      {/* 平均評価 */}
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-col items-center">
             <p className="text-4xl font-bold text-yellow-500">{averageRating.toFixed(1)}</p>
             <StarRating rating={averageRating} />
-            <p className="text-sm text-muted-foreground mt-1">{initialReviews.length}件の評価</p>
+            <p className="text-sm text-muted-foreground mt-1">{reviews.length}件の評価</p>
           </div>
           <div className="w-full md:w-3/4 space-y-2">
             {[5, 4, 3, 2, 1].map((star) => {
-              const count = initialReviews.filter((r) => Math.floor(r.rating) === star).length;
-              const percentage = initialReviews.length > 0 ? (count / initialReviews.length) * 100 : 0;
+              const count = reviews.filter((r) => Math.floor(r.rating) === star).length
+              const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0
               return (
                 <div key={star} className="flex items-center gap-2">
                   <div className="flex items-center w-16">
@@ -102,20 +140,22 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
                     <Star className="w-4 h-4 ml-1 text-yellow-400" />
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-yellow-400 h-2.5 rounded-full" style={{ width: `${percentage}%` }}></div>
+                    <div
+                      className="bg-yellow-400 h-2.5 rounded-full"
+                      style={{ width: `${percentage}%` }}
+                    ></div>
                   </div>
                   <span className="text-sm text-muted-foreground w-12">{count}件</span>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
       </div>
 
-      {/* Review Form */}
+      {/* レビュー投稿フォーム */}
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
         <h3 className="text-xl font-semibold mb-4">レビューを投稿</h3>
-
         {showThankYou ? (
           <div
             className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative"
@@ -135,7 +175,6 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
                 setRating={(rating) => setNewReview({ ...newReview, rating })}
               />
             </div>
-
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
                 お名前
@@ -144,13 +183,14 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
                 type="text"
                 id="name"
                 value={newReview.userName}
-                onChange={(e) => setNewReview({ ...newReview, userName: e.target.value })}
+                onChange={(e) =>
+                  setNewReview({ ...newReview, userName: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="名前を入力"
                 required
               />
             </div>
-
             <div>
               <label htmlFor="comment" className="block text-sm font-medium mb-2">
                 コメント
@@ -159,12 +199,13 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
                 id="comment"
                 rows={4}
                 value={newReview.comment}
-                onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                onChange={(e) =>
+                  setNewReview({ ...newReview, comment: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="ご感想をお聞かせください（任意）"
               ></textarea>
             </div>
-
             <button
               type="submit"
               disabled={isSubmitting}
@@ -205,20 +246,22 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
         )}
       </div>
 
-      {/* Reviews List */}
+      {/* 口コミ一覧 */}
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">口コミ一覧</h3>
-
-        {initialReviews.length > 0 ? (
+        {reviews.length > 0 ? (
           <div className="space-y-4">
-            {initialReviews.map((review) => (
-              <div key={review.id} className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="rounded-lg border bg-card text-card-foreground shadow-sm p-6"
+              >
                 <div className="flex justify-between items-start">
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-200">
                       {review.userImage ? (
                         <Image
-                          src={review.userImage}
+                          src={review.userImage || "/placeholder.svg"}
                           alt={review.userName}
                           fill
                           className="object-cover"
@@ -231,12 +274,13 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
                       <p className="font-medium">{review.userName}</p>
                       <div className="flex items-center mt-1">
                         <StarRating rating={review.rating} />
-                        <span className="text-sm text-muted-foreground ml-2">{review.date}</span>
+                        <span className="text-sm text-muted-foreground ml-2">
+                          {review.date}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-
                 {review.comment && (
                   <div className="mt-3 text-muted-foreground">
                     <p>{review.comment}</p>
@@ -252,5 +296,7 @@ export default function ReviewSection({ initialReviews, showThankYou, handleSubm
         )}
       </div>
     </div>
-  );
+  )
 }
+
+export default ReviewSection
