@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     const query = new URLSearchParams({
       key,
       format: "json",
-      large_area: searchParams.get("large_area") || "Z011",
+      large_area: searchParams.get("large_area") || "Z098",
     });
 
     // 追加パラメータ（例として "id" を指定）
