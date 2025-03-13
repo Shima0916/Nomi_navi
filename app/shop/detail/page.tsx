@@ -4,8 +4,8 @@ import Link from "next/link";
 import {
     MapPin,
     Clock,
-    Car,
     DollarSign,
+    Car,
     Star,
     Users,
     Utensils,
@@ -51,9 +51,9 @@ const sampleReviews: Review[] = [
 export default async function Detail({
     searchParams,
 }: {
-    searchParams: { id?: string };
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-    const { id } = searchParams;
+    const id = (await searchParams).id;
     if (!id) return <div>ID が指定されていません。</div>;
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/shops?id=${id}`);

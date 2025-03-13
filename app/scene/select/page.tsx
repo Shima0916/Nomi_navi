@@ -26,33 +26,6 @@ export default function ImageButtons() {
     }
   ]
 
-  const buttons = [
-    {
-      id: 1,
-      image: "/placeholder.svg",
-      category: "business",
-      label: "Business",
-    },
-    {
-      id: 2,
-      image: "/placeholder.svg",
-      category: "casual",
-      label: "Casual",
-    },
-    {
-      id: 3,
-      image: "/placeholder.svg",
-      category: "event",
-      label: "Event",
-    },
-    {
-      id: 4,
-      image: "/placeholder.svg",
-      category: "celebration",
-      label: "Celebration",
-    },
-  ]
-
     return (
       <div className="w-full max-w-4xl mx-auto p-6 bg-white">
         <div className="grid grid-cols-2 gap-6 md:gap-8">

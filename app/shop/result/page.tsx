@@ -9,6 +9,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { MapPin, Clock, JapaneseYenIcon as Yen } from "lucide-react"
+import Link from "next/link" // 追加: Next.jsのLinkコンポーネントをインポート
+import Image from "next/image"
 
 
 export default function RestaurantSearch() {
@@ -98,72 +100,72 @@ export default function RestaurantSearch() {
       </div>
 
       <div className="flex flex-col space-y-4">
-        {restaurants.map((restaurant) => (
-          <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+        {restaurants.map((restaurant, index) => (
+          <RestaurantCard key={index} restaurant={restaurant} />
         ))}
       </div>
-      {/* 
-        Note: In production, replace the static data with API call:
-        
-        useEffect(() => {
-          async function fetchRestaurants() {
-            const response = await fetch('/api/restaurants');
-            const data = await response.json();
-            setRestaurants(data);
-          }
-          fetchRestaurants();
-        }, []);
-      */}
     </div>
   )
 }
 
+type Restaurant = {
+  id: string,
+  name: string,
+  cuisine: string,
+  location: string,
+  hours: string,
+  price: string,
+  privateRoom: boolean,
+  image: string,
+}
 
-function RestaurantCard({ restaurant }) {
+function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
   return (
-    <Card className="overflow-hidden">
-      <div className="flex h-full">
-        <div className="w-1/3">
-          <img
-            src={restaurant.image || "/placeholder.svg"}
-            alt={restaurant.name}
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="w-2/3 p-4">
-          <h3 className="font-bold text-lg">{restaurant.name}</h3>
-          <p className="text-sm text-muted-foreground mb-2">{restaurant.cuisine}</p>
-
-          <div className="flex items-center text-sm mb-1">
-            <MapPin className="h-4 w-4 mr-1" />
-            <span>{restaurant.location}</span>
+    <Link href={`/shop/detail?id=${restaurant.id}`}>
+      <Card className="overflow-hidden cursor-pointer transition-shadow hover:shadow-md">
+        <div className="flex h-full">
+          <div className="w-1/3">
+            <Image
+              src={restaurant.image || "/placeholder.svg"}
+              alt={restaurant.name}
+              className="h-full w-full object-cover"
+            />
           </div>
+          <div className="w-2/3 p-4">
+            <h3 className="font-bold text-lg">{restaurant.name}</h3>
+            <p className="text-sm text-muted-foreground mb-2">{restaurant.cuisine}</p>
 
-          <div className="flex items-center text-sm mb-1">
-            <Clock className="h-4 w-4 mr-1" />
-            <span>{restaurant.hours}</span>
-          </div>
-
-          <div className="flex items-center text-sm">
-            <Yen className="h-4 w-4 mr-1" />
-            <span>{restaurant.price}</span>
-          </div>
-
-          {restaurant.privateRoom && (
-            <div className="mt-2">
-              <span className="bg-muted px-2 py-1 rounded-md text-xs">個室あり</span>
+            <div className="flex items-center text-sm mb-1">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{restaurant.location}</span>
             </div>
-          )}
+
+            <div className="flex items-center text-sm mb-1">
+              <Clock className="h-4 w-4 mr-1" />
+              <span>{restaurant.hours}</span>
+            </div>
+
+            <div className="flex items-center text-sm">
+              <Yen className="h-4 w-4 mr-1" />
+              <span>{restaurant.price}</span>
+            </div>
+
+            {restaurant.privateRoom && (
+              <div className="mt-2">
+                <span className="bg-muted px-2 py-1 rounded-md text-xs">個室あり</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </Link>
   )
 }
 
 // サンプルデータ
 const restaurants = [
   {
-    id: 1,
+    id: 'J003473042',
     name: "和食 たかはし",
     cuisine: "和食",
     location: "東京都渋谷区 0.5km",
@@ -173,7 +175,7 @@ const restaurants = [
     image: "/placeholder.svg?height=200&width=200",
   },
   {
-    id: 2,
+    id: 'J003473042',
     name: "イタリアン ベラヴィスタ",
     cuisine: "イタリアン",
     location: "東京都渋谷区 0.8km",
@@ -183,7 +185,7 @@ const restaurants = [
     image: "/placeholder.svg?height=200&width=200",
   },
   {
-    id: 3,
+    id: 'J003473042',
     name: "中華料理 龍門",
     cuisine: "中華料理",
     location: "東京都渋谷区 1.2km",
@@ -193,7 +195,7 @@ const restaurants = [
     image: "/placeholder.svg?height=200&width=200",
   },
   {
-    id: 4,
+    id: 'J003473042',
     name: "焼肉 和牛亭",
     cuisine: "焼肉",
     location: "東京都渋谷区 1.5km",
@@ -203,7 +205,7 @@ const restaurants = [
     image: "/placeholder.svg?height=200&width=200",
   },
   {
-    id: 5,
+    id: 'J003473042',
     name: "寿司 海鮮",
     cuisine: "寿司",
     location: "東京都渋谷区 0.3km",
@@ -213,7 +215,7 @@ const restaurants = [
     image: "/placeholder.svg?height=200&width=200",
   },
   {
-    id: 6,
+    id: 'J003473042',
     name: "フレンチ ル・シエル",
     cuisine: "フレンチ",
     location: "東京都渋谷区 1.8km",
