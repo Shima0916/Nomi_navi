@@ -44,9 +44,6 @@ export async function GET(request: Request) {
     if (!key) {
       throw new APIError(500, "API key is not set");
     }
-
-    // 検索パラメータから id も取得
-    const id = searchParams.get("id");
  
     const query = new URLSearchParams({
       key,

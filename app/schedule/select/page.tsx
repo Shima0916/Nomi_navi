@@ -1,13 +1,13 @@
 import { Shop } from "@/types";
 import ScheduleAdjustment from "@/components/Eventcreate/ScheduleAdjustment";
 
-export default async function Detail({
-  searchParams,
+export default async function ScheduleSelectPage({
+    searchParams,
 }: {
-  searchParams: { id?: string };
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const { id } = searchParams;
-  if (!id) return <div>ID が指定されていません。</div>;
+    const id = (await searchParams).id;
+    if (!id) return <div>ID が指定されていません。</div>;
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/shops?id=${id}`);
   if (!res.ok) {
