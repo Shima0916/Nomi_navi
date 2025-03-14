@@ -5,7 +5,6 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import Link from "next/link" 
 
-
 export default function ImageButtons() {
   const [selectedButton, setSelectedButton] = useState<number | null>(null)
   const queryParams = [
@@ -29,6 +28,8 @@ export default function ImageButtons() {
     return (
       <div className="w-full max-w-4xl mx-auto p-6 bg-white">
         <div className="grid grid-cols-2 gap-6 md:gap-8">
+          <div>
+          </div>
         
             <button
               key="1"
@@ -43,7 +44,7 @@ export default function ImageButtons() {
               <div className="relative w-full h-32 md:h-44 mb-2">
                 <Link href={{pathname: "/shop/result",query: queryParams[0],}}>
                   <Image
-                    src="https://tier-family.co.jp/wp-content/uploads/image4-36-1024x1024.jpg"
+                    src="/images/Business_Deal.png"
                     alt="business"
                     fill
                     className="object-cover rounded-lg"
@@ -66,7 +67,7 @@ export default function ImageButtons() {
               <div className="relative w-full h-32 md:h-44 mb-2">
                 <Link href={{pathname: "/shop/result",query: queryParams[1],}}>
                 <Image
-                  src="https://tier-family.co.jp/wp-content/uploads/image4-36-1024x1024.jpg"
+                  src="/images/Team_Brainstorming.png"
                   alt="casual"
                   fill
                   className="object-cover rounded-lg"
@@ -88,7 +89,7 @@ export default function ImageButtons() {
               <div className="relative w-full h-32 md:h-44 mb-2">
                 <Link href={{pathname: "/shop/result",query: queryParams[2],}}>
                   <Image
-                    src="https://tier-family.co.jp/wp-content/uploads/image4-36-1024x1024.jpg"
+                    src="/images/Having_Fun.png"
                     alt="event"
                     fill
                     className="object-cover rounded-lg"
@@ -110,7 +111,7 @@ export default function ImageButtons() {
               <div className="relative w-full h-32 md:h-44 mb-2">
                 <Link href={{pathname: "/shop/result",query: queryParams[3],}}>
                   <Image
-                    src="https://tier-family.co.jp/wp-content/uploads/image4-36-1024x1024.jpg"
+                    src="/images/Hero_Employee.png"
                     alt="celebration"
                     fill
                     className="object-cover rounded-lg"
