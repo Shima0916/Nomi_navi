@@ -8,6 +8,7 @@ import { Textarea } from '@/components/Eventcreate/textarea';
 import { Shop } from '@/types';
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { useRouter } from 'next/navigation';
 
 export default function ScheduleAdjustment({ restaurantData }: { restaurantData: Shop }) {
   const [selectedDates, setSelectedDates] = useState<{ date: string; startTime: string; endTime: string }[]>([]);
@@ -20,15 +21,14 @@ export default function ScheduleAdjustment({ restaurantData }: { restaurantData:
     const formattedDates = selectedDates.map(({ date, startTime, endTime }) => 
       `${date} ${startTime && endTime ? `${startTime}～${endTime}` : ''}`
     ).join(', ');
-    
+
     return `
-＝＝
-社員向け周知文の例
 --------------
-📢 開発月１ランチのお知らせ: ${restaurantData.name}
+🍖会食のお知らせ: ${restaurantData.name}
 --------------
 📅 日時：${formattedDates}
-✅ 参加できる方は「参加」スタンプをお願いします！
+次のURLから参加登録をお願いします！
+${process.env.NEXT_PUBLIC_API_HOST}/schedule/form/
 `;
   };
 
@@ -64,6 +64,14 @@ export default function ScheduleAdjustment({ restaurantData }: { restaurantData:
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);
   };
+
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    const encodedDates = encodeURIComponent(JSON.stringify(selectedDates));
+    router.push(`/schedule/form?dates=${encodedDates}`);
+  };
+
 
   return (
     <div className="container mx-auto p-4">
@@ -161,6 +169,13 @@ export default function ScheduleAdjustment({ restaurantData }: { restaurantData:
             </Button>
           </CardContent>
         </Card>
+              {/* 右下にスケジュールフォームへのボタンを配置 */}
+              <Button 
+            className="fixed bottom-6 right-6 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600" 
+            onClick={handleNavigate}>
+            日程調整へ
+        </Button>
+
       </div>
     </div>
   );
