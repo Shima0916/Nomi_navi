@@ -178,6 +178,16 @@ const restaurants = [
   },
   {
     id: 'J003473042',
+    name: "和食 たかはし",
+    cuisine: "和食",
+    location: "東京都渋谷区 0.5km",
+    hours: "11:00-22:00",
+    price: "3,000円〜5,000円",
+    privateRoom: true,
+    image: "/placeholder.svg?height=200&width=200",
+  },
+  {
+    id: 'J003473042',
     name: "イタリアン ベラヴィスタ",
     cuisine: "イタリアン",
     location: "東京都渋谷区 0.8km",
