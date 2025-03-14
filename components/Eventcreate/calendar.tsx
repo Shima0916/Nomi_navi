@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-//import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { DayPicker, useNavigation } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -13,7 +13,7 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  //...props
+  ...props
 }: CalendarProps) {
   return (
     <DayPicker
@@ -53,11 +53,10 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      components={{
-        //IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        //IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-      }}
-      //{...props}
+      // `components` ではなく `fromMonth` をカスタマイズ
+      fromMonth={<ChevronLeft className="h-4 w-4" />}
+      toMonth={<ChevronRight className="h-4 w-4" />}
+      {...props}
     />
   )
 }
