@@ -129,6 +129,8 @@ function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
               src={restaurant.image || "/placeholder.svg"}
               alt={restaurant.name}
               className="h-full w-full object-cover"
+              width={100}
+              height={100}
             />
           </div>
           <div className="w-2/3 p-4">
