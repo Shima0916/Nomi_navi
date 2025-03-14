@@ -54,8 +54,8 @@ function Calendar({
         ...classNames,
       }}
       // `components` ではなく `fromMonth` をカスタマイズ
-      fromMonth={<ChevronLeft className="h-4 w-4" />}
-      toMonth={<ChevronRight className="h-4 w-4" />}
+      // fromMonth={<ChevronLeft className="h-4 w-4" />}
+      // toMonth={<ChevronRight className="h-4 w-4" />}
       {...props}
     />
   )
