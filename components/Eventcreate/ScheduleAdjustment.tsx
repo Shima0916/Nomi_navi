@@ -21,6 +21,7 @@ export default function ScheduleAdjustment({ restaurantData }: { restaurantData:
     const formattedDates = selectedDates.map(({ date, startTime, endTime }) => 
       `${date} ${startTime && endTime ? `${startTime}～${endTime}` : ''}`
     ).join(', ');
+    const encodedDates = encodeURIComponent(JSON.stringify(selectedDates));
 
     return `
 --------------
@@ -28,7 +29,7 @@ export default function ScheduleAdjustment({ restaurantData }: { restaurantData:
 --------------
 📅 日時：${formattedDates}
 次のURLから参加登録をお願いします！
-${process.env.NEXT_PUBLIC_API_HOST}/schedule/form/
+${process.env.NEXT_PUBLIC_API_HOST}/schedule/form?dates=${encodedDates}&id=${restaurantData.id}
 `;
   };
 
