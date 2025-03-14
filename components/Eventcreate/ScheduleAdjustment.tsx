@@ -69,7 +69,8 @@ ${process.env.NEXT_PUBLIC_API_HOST}/schedule/form/
 
   const handleNavigate = () => {
     const encodedDates = encodeURIComponent(JSON.stringify(selectedDates));
-    router.push(`/schedule/form?dates=${encodedDates}`);
+    router.push(`/schedule/form?dates=${encodedDates}&id=${restaurantData.id}`);
+    console.log("😊😊😊😊😊😊😊😊😊😊😊😊"+restaurantData.id)
   };
 
 

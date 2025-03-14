@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Check, Clock, MapPin, X } from "lucide-react";
+import { Check, Clock, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/Eventform/badge";
 
 export default function EventPage({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [responses, setResponses] = useState<Record<string, "yes" | "no" | "maybe" | null>>({});
   const [proposedDates, setProposedDates] = useState<{ date: string; startTime: string; endTime: string }[]>([]);
 
   useEffect(() => {
@@ -24,12 +24,17 @@ export default function EventPage({ params }: { params: { id: string } }) {
     }
   }, [searchParams]);
 
-  const handleResponse = (response: "yes" | "no" | "maybe") => {
-    if (!selectedDate) {
-      alert("まず日付を選択してください");
+  const handleResponse = (date: string, response: "yes" | "no" | "maybe") => {
+    setResponses((prevResponses) => ({ ...prevResponses, [date]: response }));
+    setSelectedDate(date);
+  };
+
+  const handleSubmit = () => {
+    if (!selectedDate || !responses[selectedDate]) {
+      alert("日付と回答を選択してください");
       return;
     }
-    console.log(`日付 ${selectedDate} に対して ${response} と回答しました`);
+    console.log(`日付 ${selectedDate} に対して ${responses[selectedDate]} と回答しました`);
   };
 
   return (
@@ -44,7 +49,6 @@ export default function EventPage({ params }: { params: { id: string } }) {
           <p>提案された日程を確認してください。</p>
           <div className="flex items-start space-x-2 text-sm">
             <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
-            <span>回答期限: 2025年3月10日</span>
           </div>
         </CardContent>
       </Card>
@@ -60,7 +64,7 @@ export default function EventPage({ params }: { params: { id: string } }) {
               proposedDates.map((date, index) => (
                 <div
                   key={index}
-                  className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border cursor-pointer hover:bg-muted/50 ${selectedDate === date.date ? "border-primary bg-muted/50" : ""}`}
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border cursor-pointer transition duration-300 ease-in-out ${responses[date.date] === "yes" ? "bg-green-100 bg-opacity-50 border-green-600" : responses[date.date] === "maybe" ? "bg-yellow-100 bg-opacity-50 border-yellow-600" : responses[date.date] === "no" ? "bg-red-100 bg-opacity-50 border-red-600" : "hover:bg-muted/50"}`}
                   onClick={() => setSelectedDate(date.date)}
                 >
                   <div className="flex items-center space-x-3">
@@ -76,6 +80,11 @@ export default function EventPage({ params }: { params: { id: string } }) {
                       </div>
                     </div>
                   </div>
+                  <div className="flex space-x-2 mt-2 sm:mt-0">
+                    <Button variant={responses[date.date] === "yes" ? "default" : "outline"} onClick={() => handleResponse(date.date, "yes")}>参加可能</Button>
+                    <Button variant={responses[date.date] === "maybe" ? "default" : "outline"} onClick={() => handleResponse(date.date, "maybe")}>未定</Button>
+                    <Button variant={responses[date.date] === "no" ? "default" : "outline"} onClick={() => handleResponse(date.date, "no")} className="text-destructive">不参加</Button>
+                  </div>
                 </div>
               ))
             ) : (
@@ -83,15 +92,9 @@ export default function EventPage({ params }: { params: { id: string } }) {
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-          <Button className="w-full sm:w-auto" onClick={() => handleResponse("yes")} disabled={!selectedDate}>
-            <Check className="mr-2 h-4 w-4" /> 参加可能
-          </Button>
-          <Button variant="outline" className="w-full sm:w-auto" onClick={() => handleResponse("maybe")} disabled={!selectedDate}>
-            未定
-          </Button>
-          <Button variant="outline" className="w-full sm:w-auto text-destructive hover:text-destructive" onClick={() => handleResponse("no")} disabled={!selectedDate}>
-            <X className="mr-2 h-4 w-4" /> 不参加
+        <CardFooter className="flex justify-center mt-4">
+          <Button className="bg-blue-500 text-white hover:bg-blue-600" onClick={handleSubmit} disabled={!selectedDate || !responses[selectedDate]}>
+            <Send className="mr-2 h-4 w-4" /> 送信する
           </Button>
         </CardFooter>
       </Card>
