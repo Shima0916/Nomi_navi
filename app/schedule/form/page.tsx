@@ -6,6 +6,7 @@ import { Check, Clock, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shop } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function EventPage() {
   const searchParams = useSearchParams();
@@ -58,6 +59,7 @@ export default function EventPage() {
     setResponses((prevResponses) => ({ ...prevResponses, [date]: response }));
     setSelectedDate(date);
   };
+  const router = useRouter();
 
   const handleSubmit = () => {
     if (!selectedDate || !responses[selectedDate]) {
@@ -65,6 +67,8 @@ export default function EventPage() {
       return;
     }
     console.log(`日付 ${selectedDate} に対して ${responses[selectedDate]} と回答しました`);
+    // 「回答ありがとうございました」ページへ遷移
+    router.push("/schedule/thankyou");
   };
 
   console.log("🟢🟢🟢🟢🟢🟢🟢 ID:", id, "🟢🟢🟢🟢🟢🟢🟢");
