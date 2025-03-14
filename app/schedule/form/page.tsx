@@ -5,13 +5,20 @@ import { useSearchParams } from "next/navigation";
 import { Check, Clock, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Shop } from "@/types";
 
-export default function EventPage({ params }: { params: { id: string } }) {
+export default function EventPage() {
   const searchParams = useSearchParams();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [responses, setResponses] = useState<Record<string, "yes" | "no" | "maybe" | null>>({});
   const [proposedDates, setProposedDates] = useState<{ date: string; startTime: string; endTime: string }[]>([]);
+  const [restaurantData, setRestaurantData] = useState<Shop | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
+  const id = searchParams.get("id");
+
+  // 日程データを取得
   useEffect(() => {
     const datesParam = searchParams.get("dates");
     if (datesParam) {
@@ -23,6 +30,29 @@ export default function EventPage({ params }: { params: { id: string } }) {
       }
     }
   }, [searchParams]);
+
+  // 店舗データを取得
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchShopData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/shops?id=${id}`);
+        if (!res.ok) {
+          throw new Error("データ取得エラーです");
+        }
+        const jsondata = await res.json();
+        setRestaurantData(jsondata[0]);
+      } catch (error) {
+        //setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchShopData();
+  }, [id]);
 
   const handleResponse = (date: string, response: "yes" | "no" | "maybe") => {
     setResponses((prevResponses) => ({ ...prevResponses, [date]: response }));
@@ -37,22 +67,31 @@ export default function EventPage({ params }: { params: { id: string } }) {
     console.log(`日付 ${selectedDate} に対して ${responses[selectedDate]} と回答しました`);
   };
 
+  console.log("🟢🟢🟢🟢🟢🟢🟢 ID:", id, "🟢🟢🟢🟢🟢🟢🟢");
+  console.log("🏠 店舗データ:", restaurantData);
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold">スケジュール確認</h1>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>イベント詳細</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p>提案された日程を確認してください。</p>
-          <div className="flex items-start space-x-2 text-sm">
-            <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-      
+
+      {loading ? (
+        <p>データ取得中...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : restaurantData ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>店舗情報</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>店舗名: {restaurantData.name}</p>
+            <p>住所: {restaurantData.address}</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <p className="text-gray-500">店舗情報が見つかりません。</p>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>提案された日程</CardTitle>
