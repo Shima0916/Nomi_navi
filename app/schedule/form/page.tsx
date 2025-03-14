@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Check, Clock, X, Send } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shop } from "@/types";
@@ -15,7 +15,9 @@ export default function EventPage() {
   const [proposedDates, setProposedDates] = useState<{ date: string; startTime: string; endTime: string }[]>([]);
   const [restaurantData, setRestaurantData] = useState<Shop | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [, setError] = useState<string | null>(null);
 
   const id = searchParams.get("id");
 
@@ -46,7 +48,7 @@ export default function EventPage() {
         const jsondata = await res.json();
         setRestaurantData(jsondata[0]);
       } catch (error) {
-        //setError(error.message);
+        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
@@ -80,8 +82,6 @@ export default function EventPage() {
 
       {loading ? (
         <p>データ取得中...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
       ) : restaurantData ? (
         <Card>
           <CardHeader>
