@@ -1,41 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { Suspense } from "react";
 import { Check, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shop } from "@/types";
 import { useRouter } from "next/navigation";
 
-export default function EventPage() {
-  const searchParams = useSearchParams();
+// SearchParams を使用するコンポーネントを分離
+function EventContent() {
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [responses, setResponses] = useState<Record<string, "yes" | "no" | "maybe" | null>>({});
   const [proposedDates, setProposedDates] = useState<{ date: string; startTime: string; endTime: string }[]>([]);
   const [restaurantData, setRestaurantData] = useState<Shop | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, setError] = useState<string | null>(null);
-
-  const id = searchParams.get("id");
-
-  // 日程データを取得
-  useEffect(() => {
-    const datesParam = searchParams.get("dates");
-    if (datesParam) {
-      try {
-        const decodedDates = JSON.parse(decodeURIComponent(datesParam));
-        setProposedDates(decodedDates);
-      } catch (error) {
-        console.error("Invalid date format:", error);
-      }
-    }
-  }, [searchParams]);
+  
+  // ここで useSearchParams() を使用
+  const { id, parsedDates } = useEventParams();
 
   // 店舗データを取得
-  useEffect(() => {
+  React.useEffect(() => {
     if (!id) return;
 
     const fetchShopData = async () => {
@@ -57,11 +46,17 @@ export default function EventPage() {
     fetchShopData();
   }, [id]);
 
+  // 日程データを設定
+  React.useEffect(() => {
+    if (parsedDates) {
+      setProposedDates(parsedDates);
+    }
+  }, [parsedDates]);
+
   const handleResponse = (date: string, response: "yes" | "no" | "maybe") => {
     setResponses((prevResponses) => ({ ...prevResponses, [date]: response }));
     setSelectedDate(date);
   };
-  const router = useRouter();
 
   const handleSubmit = () => {
     if (!selectedDate || !responses[selectedDate]) {
@@ -142,5 +137,35 @@ export default function EventPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+// useSearchParams() を使用する分離コンポーネント
+import { useSearchParams } from "next/navigation";
+import React from "react";
+
+function useEventParams() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const datesParam = searchParams.get("dates");
+  const parsedDates = React.useMemo(() => {
+    if (!datesParam) return [];
+    try {
+      return JSON.parse(decodeURIComponent(datesParam));
+    } catch (error) {
+      console.error("Invalid date format:", error);
+      return [];
+    }
+  }, [datesParam]);
+
+  return { id, parsedDates };
+}
+
+// メインコンポーネント - Suspenseでラップ
+export default function EventPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-10">データを読み込み中...</div>}>
+      <EventContent />
+    </Suspense>
   );
 }
