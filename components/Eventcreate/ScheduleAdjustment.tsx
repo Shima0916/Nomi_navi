@@ -29,7 +29,7 @@ export default function ScheduleAdjustment({ restaurantData }: { restaurantData:
 ✅ 参加できる方は「参加」スタンプをお願いします！
 `;
     };
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         setCustomNotice(generateNotice());
     }, [selectedDates, startTime, endTime, restaurantData.name]);
